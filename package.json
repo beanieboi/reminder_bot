@@ -1,0 +1,26 @@
+{
+  "name": "reminder-bot",
+  "version": "1.0.0",
+  "description": "This bot reminds you of all the things",
+  "main": "dist/app.js",
+  "scripts": {
+    "start": "tsc && node dist/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "reminder"
+  ],
+  "author": "Kristin and Benjamin Fritsch",
+  "license": "ISC",
+  "dependencies": {
+    "@types/dotenv": "^8.2.0",
+    "dotenv": "^8.2.0",
+    "telegraf": "^3.36.0"
+  },
+  "devDependencies": {
+    "tslint": "^6.1.0",
+    "typescript": "^3.8.3"
+  }
+}
