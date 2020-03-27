@@ -4,7 +4,9 @@
   "description": "This bot reminds you of all the things",
   "main": "dist/app.js",
   "scripts": {
-    "start": "tsc && node dist/app.js",
+    "postinstall": "tsc",
+    "start": "node dist/app.js",
+    "dev": "tsc && node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
