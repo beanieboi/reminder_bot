@@ -1,0 +1,1 @@
+worker_bot: node dist/app.js
