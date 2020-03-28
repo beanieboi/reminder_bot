@@ -2,8 +2,14 @@
 
 ## Setup
 
-Run `npm install`
-
 Set the bot token: `echo BOT_TOKEN=YOUR_TOKEN >> .env`
 
-Run `npm run start`
+## Run the app
+
+Run `npm install`
+
+Run `npm run dev`
+
+## Run tests
+
+Run `npm run test`
