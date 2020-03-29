@@ -1,5 +1,4 @@
 import Bot from './bot'
-import Logger from './logger'
 const db = require('./postgres')
 
 const intervalInMs = 6000
@@ -23,7 +22,7 @@ const findReminder: () => Promise<OpenReminder[]> = async () => {
     const response = await db.query(query)
     return response.rows
   } catch(err) {
-    return Promise.resolve([])
+    return []
   }
 }
 

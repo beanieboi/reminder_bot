@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { Status } from './../src/data'
+import { Status } from './../src/types'
 
 const reminder = {
   id: 1,
