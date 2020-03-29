@@ -1,8 +1,10 @@
-import Bot from './bot'
+import {ContextMessageUpdate} from "telegraf"
+import moment from "moment"
 const db = require('./postgres')
 import { Task, Status } from './types'
 import Logger from './logger'
-import {ContextMessageUpdate} from "telegraf"
+import Bot from './bot'
+
 
 const intervalInMs = 6000
 let intervalId: NodeJS.Timeout
@@ -56,16 +58,18 @@ const changeStatus = (ctx: ContextMessageUpdate, task: Task, status: Status) => 
 }
 
 const addNewReminder = async (task: Task, nextReminderInMinutes: number) => {
-  const query = `INSERT INTO reminders (task_id, status, start_time)
+  const getLastReminder = `SELECT due_at FROM reminders WHERE task_id = $1 ORDER BY id DESC LIMIT 1`
+  const insertNewReminder = `INSERT INTO reminders (task_id, status, start_time)
   VALUES ($1, $2, $3)`
 
   try {
-    await db.query(query, [task.id, Status.OPEN, nextReminderInMinutes])
+    const due_at = await db.query(getLastReminder, [task.id])
+    const new_due_at = moment(due_at).add(nextReminderInMinutes, "m")
+    await db.query(insertNewReminder, [task.id, Status.OPEN, new_due_at])
   } catch(err) {
     Logger.error(err)
   }
 }
-
 
 const Reminder = {start, stop, findReminder, changeStatus, addNewReminder}
 
