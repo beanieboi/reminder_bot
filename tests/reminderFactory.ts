@@ -8,7 +8,7 @@ const reminder = {
     channel_id: 123,
     text: "Example text",
     start_time: moment().unix(),
-    interval_hours: 24,
+    interval_minutes: 24,
     skipable: true,
     snooze_default_minutes: 12
   },

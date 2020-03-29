@@ -59,7 +59,8 @@ function checkDone(ctx: ContextMessageUpdate, task: Task) {
     if (ctx.message.text.toLowerCase().includes(task.keyword.toLowerCase())) {
 
       Reminder.changeStatus(ctx, task, Status.COMPLETED)
-      Reminder.addNewReminder(task)
+
+      Reminder.addNewReminder(task, task.interval_minutes)
       ctx.reply(`Check, ${task.keyword} erledigt!`)
     } else {
       ctx.reply(`Keyword icht erkannt`)
@@ -73,8 +74,8 @@ function checkSnooze(ctx :ContextMessageUpdate, task: Task) {
 
     if (ctx.message.text.toLowerCase().includes(task.keyword.toLowerCase())) {
 
-      Reminder.changeStatus(task, Status.SNOOZED)
-      Reminder.addNewReminder(task)
+      Reminder.changeStatus(ctx, task, Status.SNOOZED)
+      Reminder.addNewReminder(task, task.snooze_default_minutes)
       ctx.reply(`Check, ${task.keyword} verschoben!`)
     } else {
       ctx.reply(`Keyword icht erkannt`)

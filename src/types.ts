@@ -10,7 +10,7 @@ export interface Task {
   channel_id: number,
   text: string,
   start_time: number,
-  interval_hours: number,
+  interval_minutes: number,
   skipable: boolean,
   snooze_default_minutes: number,
   keyword: string

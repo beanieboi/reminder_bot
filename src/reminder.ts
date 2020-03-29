@@ -10,13 +10,13 @@ let intervalId: NodeJS.Timeout
 interface OpenReminder {
   status: string,
   message: string,
-  interval_hours: number,
+  interval_minutes: number,
   chat_id: number,
   keyword: string
 }
 
 const findReminder: () => Promise<OpenReminder[]> = async () => {
-  const query = `SELECT status, message, interval_hours, chat_id, keyword
+  const query = `SELECT status, message, interval_minutes, chat_id, keyword
     FROM reminders
     LEFT JOIN tasks ON reminders.task_id = tasks.id
     LEFT JOIN installations ON tasks.installation_id = installations.id
@@ -55,8 +55,15 @@ const changeStatus = (ctx: ContextMessageUpdate, task: Task, status: Status) => 
   }
 }
 
-const addNewReminder = (task: Task) => {
+const addNewReminder = async (task: Task, nextReminderInMinutes: number) => {
+  const query = `INSERT INTO reminders (task_id, status, start_time)
+  VALUES ($1, $2, $3)`
 
+  try {
+    await db.query(query, [task.id, Status.OPEN, nextReminderInMinutes])
+  } catch(err) {
+    Logger.error(err)
+  }
 }
 
 

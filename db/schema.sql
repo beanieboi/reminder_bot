@@ -17,7 +17,7 @@ CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
     installation_id integer NOT NULL REFERENCES installations(id),
     message text NOT NULL,
-    interval_hours smallint NOT NULL,
+    interval_minutes smallint NOT NULL,
     skippable boolean NOT NULL DEFAULT true,
     snooze_default_minutes smallint NOT NULL,
     keyword text NOT NULL
