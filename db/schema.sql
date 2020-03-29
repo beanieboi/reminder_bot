@@ -33,7 +33,8 @@ CREATE TABLE tasks (
     message text NOT NULL,
     interval_hours smallint NOT NULL,
     skippable boolean NOT NULL DEFAULT true,
-    snooze_default_minutes smallint NOT NULL
+    snooze_default_minutes smallint NOT NULL,
+    keyword text NOT NULL
 );
 
 -- Indices -------------------------------------------------------

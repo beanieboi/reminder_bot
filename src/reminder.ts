@@ -1,21 +1,21 @@
-import moment from 'moment'
 import Bot from './bot'
-import { reminderData, Reminder, Task, Status } from './data'
 import Logger from './logger'
 const db = require('./postgres')
 
-const intervalInMs = 60000
+const intervalInMs = 6000
 let intervalId: NodeJS.Timeout
 
 interface OpenReminder {
   status: string,
   message: string,
   interval_hours: number,
-  chat_id: number
+  chat_id: number,
+  keyword: string
 }
 
 const findReminder: () => Promise<OpenReminder[]> = async () => {
-  const query = `SELECT status, message, interval_hours, chat_id FROM reminders
+  const query = `SELECT status, message, interval_hours, chat_id, keyword
+    FROM reminders
     LEFT JOIN tasks ON reminders.task_id = tasks.id
     LEFT JOIN installations ON tasks.installation_id = installations.id`
 

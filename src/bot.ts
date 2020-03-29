@@ -3,6 +3,7 @@ import { config } from "dotenv"
 import Logger from './logger'
 import { reminderData } from './data'
 import Telegraf, {ContextMessageUpdate} from "telegraf"
+import Handler from './handler'
 
 const db = require('./postgres')
 
@@ -10,31 +11,15 @@ config({ path: resolve(__dirname, "../.env") })
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
-const handleListReminder = (ctx: ContextMessageUpdate) => {
-  reminderData.forEach(reminder => {
-    // todo: format messages
-    ctx.reply(reminder.task.text)
-  })
-}
-
-const handleInstallation = async (ctx: ContextMessageUpdate) => {
-  const query = `INSERT INTO
-    installations (chat_id, chat_type)
-    VALUES($1, $2)
-    ON CONFLICT (chat_id)
-    DO NOTHING;`
-  const res = await db.query(query, [ctx.chat.id, ctx.chat.type])
-  ctx.reply('Welcome')
-}
-
 const launch = async () => {
   const botInfo = await bot.telegram.getMe()
   bot.options.username = botInfo.username
 
   Logger.debug(bot.options)
 
-  bot.start(handleInstallation)
-  bot.hears('/list', handleListReminder)
+  bot.start(Handler.handleInstallation)
+  bot.hears('/list', Handler.handleListReminder)
+  bot.on('text', Handler.handleResponse)
 
   return bot.launch()
 }
