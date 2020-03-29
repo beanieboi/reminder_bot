@@ -20,7 +20,7 @@ const findReminder: () => Promise<OpenReminder[]> = async () => {
     const response = await db.query(query)
     return response.rows
   } catch(err) {
-    return Promise.resolve([])
+    return []
   }
 }
 

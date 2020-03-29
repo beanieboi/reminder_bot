@@ -15,8 +15,13 @@ const handleInstallation = async (ctx: ContextMessageUpdate) => {
     VALUES($1, $2)
     ON CONFLICT (chat_id)
     DO NOTHING;`
-  const res = await db.query(query, [ctx.chat.id, ctx.chat.type])
-  ctx.reply('Welcome')
+
+  try {
+    await db.query(query, [ctx.chat.id, ctx.chat.type])
+    ctx.reply('Welcome')
+  } catch (error) {
+    ctx.reply(`Error ${error}`)
+  }
 }
 
 const launch = async () => {
