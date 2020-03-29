@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "tsc",
     "start": "node dist/app.js",
-    "dev": "tsc && node dist/app.js",
+    "dev": "rm -rf dist/ && tsc && node dist/app.js",
     "test": "jest"
   },
   "keywords": [
