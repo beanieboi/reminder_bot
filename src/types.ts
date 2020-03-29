@@ -10,7 +10,6 @@ export interface Task {
   channel_id: number,
   text: string,
   interval_minutes: number,
-  due_at: number,
   skipable: boolean,
   snooze_default_minutes: number,
   keyword: string
@@ -18,6 +17,7 @@ export interface Task {
 
 export interface Reminder {
   id: number,
+  due_at: number,
   task: Task,
   status: Status
 }
