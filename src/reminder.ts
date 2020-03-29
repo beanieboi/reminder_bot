@@ -1,7 +1,4 @@
-import moment from 'moment'
 import Bot from './bot'
-import { reminderData, Reminder, Task, Status } from './data'
-import Logger from './logger'
 const db = require('./postgres')
 
 const intervalInMs = 60000
