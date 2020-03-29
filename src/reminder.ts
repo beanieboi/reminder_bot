@@ -22,12 +22,13 @@ const findReminder: () => Promise<OpenReminder[]> = async () => {
     FROM reminders
     LEFT JOIN tasks ON reminders.task_id = tasks.id
     LEFT JOIN installations ON tasks.installation_id = installations.id
-    WHERE reminders.status = $? AND due_at < NOW()::time;`
+    WHERE reminders.status = $1 AND reminders.due_at < NOW();`
 
   try {
-    const response = await db.query(query, Status.OPEN)
+    const response = await db.query(query, [Status.OPEN])
     return response.rows
   } catch(err) {
+    Logger.debug(err)
     return []
   }
 }
@@ -48,7 +49,7 @@ const stop = () => {
 const changeStatus = (task: Task, status: Status, username: string) => {
   const query = `UPDATE reminders
   SET status = $1, finished_at = NOW(), finished_by = $2
-  WHERE task_id = $3 AND reminders.status = $4 AND due_at < NOW()::time`
+  WHERE task_id = $3 AND reminders.status = $4 AND due_at < NOW()`
 
   return db.query(query, [status, username, task.id, Status.OPEN])
 }

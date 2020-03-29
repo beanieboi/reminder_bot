@@ -33,8 +33,8 @@ CREATE TABLE reminders (
     id SERIAL PRIMARY KEY,
     task_id integer NOT NULL REFERENCES tasks(id),
     status text NOT NULL,
-    due_at time with time zone NOT NULL,
-    finished_at time with time zone,
+    due_at timestamp with time zone NOT NULL,
+    finished_at timestamp with time zone,
     finished_by text
 );
 
