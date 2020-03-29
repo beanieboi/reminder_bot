@@ -1,34 +1,41 @@
 import moment from 'moment'
 import Bot from './bot'
 import { reminderData, Reminder, Task, Status } from './data'
+import Logger from './logger'
+const db = require('./postgres')
 
 const intervalInMs = 60000
 let intervalId: NodeJS.Timeout
 
-const isPastTask = (task: Task) => {
-  return moment().isAfter(task.start_time, 'minute')
+
+interface OpenReminder {
+  status: string,
+  message: string,
+  interval_hours: number,
+  chat_id: number
 }
 
-const isOpenReminder = (reminder: Reminder) => {
-  return reminder.status === Status.OPEN
+const findReminder = async () => {
+  const query = `SELECT status, message, interval_hours, chat_id FROM reminders
+    LEFT JOIN tasks ON reminders.task_id = tasks.id
+    LEFT JOIN installations ON tasks.installation_id = installations.id`
+
+  try {
+    const response = await db.query(query)
+    const rows: OpenReminder[] = response.rows
+    return rows
+  } catch(err) {
+    return []
+  }
 }
 
-const findReminder = (reminders: Reminder[]) => {
-  return reminders.filter((reminder) => {
-    return isOpenReminder(reminder) && isPastTask(reminder.task)
-  })
-}
-
-const messageAboutReminder = (reminders: Reminder[]) => {
-  const notifyReminder = findReminder(reminders)
-  notifyReminder.forEach((reminder) => {
-    Bot.sendMessage(`${reminder.task.text} at ${moment(reminder.task.start_time).format("dddd, MMMM Do YYYY, H:mm")}`)
-  })
-}
-
-const start = async () => {
-  intervalId = setInterval(() => {
-    messageAboutReminder(reminderData)
+const start = () => {
+  intervalId = setInterval( async() => {
+    const notifyReminder = await findReminder()
+    Logger.debug(notifyReminder)
+    // notifyReminder.forEach((reminder) => {
+    //   Bot.sendMessage(`${reminder.task.text} at ${moment(reminder.task.start_time).format("dddd, MMMM Do YYYY, H:mm")}`)
+    // })
   }, intervalInMs)
 }
 

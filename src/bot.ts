@@ -4,11 +4,11 @@ import Logger from './logger'
 import { reminderData } from './data'
 import Telegraf, {ContextMessageUpdate} from "telegraf"
 
+const db = require('./postgres')
+
 config({ path: resolve(__dirname, "../.env") })
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
-
-let chatId: number = 67731373
 
 const handleListReminder = (ctx: ContextMessageUpdate) => {
   reminderData.forEach(reminder => {
@@ -17,32 +17,30 @@ const handleListReminder = (ctx: ContextMessageUpdate) => {
   })
 }
 
+const handleInstallation = async (ctx: ContextMessageUpdate) => {
+  const query = `INSERT INTO
+    installations (chat_id, chat_type)
+    VALUES($1, $2)
+    ON CONFLICT (chat_id)
+    DO NOTHING;`
+  const res = await db.query(query, [ctx.chat.id, ctx.chat.type])
+  ctx.reply('Welcome')
+}
+
 const launch = async () => {
   const botInfo = await bot.telegram.getMe()
   bot.options.username = botInfo.username
 
   Logger.debug(bot.options)
 
-  bot.start((ctx: ContextMessageUpdate) => {
-    // todo: save chat id
-    chatId = ctx.chat.id
-    ctx.reply('Welcome')
-  })
-
+  bot.start(handleInstallation)
   bot.hears('/list', handleListReminder)
-
-  // bot.on('message', (ctx) => {
-  //   Logger.debug(ctx.message)
-  // })
 
   return bot.launch()
 }
 
-const sendMessage = (message: string) => {
-  if (chatId) {
-    return bot.telegram.sendMessage(chatId, message)
-  }
-  return Promise.resolve("Done")
+const sendMessage = (chatId: number, message: string) => {
+  return bot.telegram.sendMessage(chatId, message)
 }
 
 const Bot = {launch, sendMessage}
