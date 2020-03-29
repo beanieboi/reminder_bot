@@ -73,7 +73,7 @@ function checkSnooze(ctx :ContextMessageUpdate, task: Task) {
 
     if (ctx.message.text.toLowerCase().includes(task.keyword.toLowerCase())) {
 
-      Reminder.changeStatus(task, Status.SNOOZED)
+      Reminder.changeStatus(ctx, task, Status.SNOOZED)
       Reminder.addNewReminder(task)
       ctx.reply(`Check, ${task.keyword} verschoben!`)
     } else {
