@@ -1,12 +1,15 @@
+import moment, { Moment } from 'moment'
+
 const channel_id: number = 1234
 
-enum Status {
+export enum Status {
   SNOOZED = 'snoozed',
   COMPLETED = 'completed',
-  CANCELED = 'canceled'
+  CANCELED = 'canceled',
+  OPEN = "open"
 }
 
-interface Task {
+export interface Task {
   id: number,
   channel_id: number,
   text: string,
@@ -16,10 +19,10 @@ interface Task {
   snooze_default_minutes: number
 }
 
-interface Reminder {
+export interface Reminder {
   id: number,
-  task_id: number,
-  status: Status | null
+  task: Task,
+  status: Status
 }
 
 const tasksData: Task[] = [
@@ -27,7 +30,7 @@ const tasksData: Task[] = [
     id: 1,
     channel_id: channel_id,
     text: "Time to take your meds",
-    start_time: Date.now(),
+    start_time: moment().subtract(10, 'm').valueOf(),
     interval_hours: 12,
     skipable: false,
     snooze_default_minutes: 10
@@ -36,7 +39,7 @@ const tasksData: Task[] = [
     id: 2,
     channel_id: channel_id,
     text: "Time to take water the plants",
-    start_time: Date.now(),
+    start_time: moment().add(7, 'd').valueOf(),
     interval_hours: 24,
     skipable: true,
     snooze_default_minutes: 12
@@ -46,14 +49,14 @@ const tasksData: Task[] = [
 const reminderData: Reminder[] = [
   {
     id: 1,
-    task_id: tasksData[0].id,
-    status: null
+    task: tasksData[0],
+    status: Status.OPEN
   },
   {
     id: 2,
-    task_id: tasksData[1].id,
-    status: null
+    task: tasksData[1],
+    status: Status.OPEN
   }
 ]
 
-export {Status, tasksData, reminderData}
+export {tasksData, reminderData}
