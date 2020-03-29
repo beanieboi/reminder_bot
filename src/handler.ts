@@ -2,11 +2,8 @@ const db = require('./postgres')
 import bot from './bot'
 import Telegraf, {ContextMessageUpdate} from "telegraf"
 import Logger from './logger'
-
-interface Keyword {
-  task_id: string,
-  keyword: string
-}
+import Reminder from './reminder'
+import { Task, Status } from './types'
 
 const handleHelpMessage = (ctx: ContextMessageUpdate, next) => {
   const mess = ctx.message.text
@@ -37,16 +34,44 @@ const handleInstallation = async (ctx: ContextMessageUpdate) => {
 
 const handleResponse = async (ctx: ContextMessageUpdate, next) => {
   Logger.debug("dd")
-  const query = 'SELECT id as task_id, keyword FROM tasks'
+  const query = 'SELECT * FROM tasks'
   const response = await db.query(query)
 
-  let keywords = <Array<Keyword>>response.rows
-  keywords.forEach((word) => {
-
-
+  let tasks = <Array<Task>>response.rows
+  tasks.forEach((task) => {
+    checkSnooze(ctx, task)
+    checkDone(ctx, task)
   })
-  ctx.reply('Welcome')
+
   next()
+}
+
+function checkSnooze(ctx: ContextMessageUpdate, task: Task) {
+  if (ctx.message.text.toLowerCase().includes("done") ||
+      ctx.message.text.toLowerCase().includes("erledigt") ||
+      ctx.message.text.toLowerCase().includes("passt")) {
+    if (ctx.message.text.toLowerCase().includes(task.keyword.toLowerCase())) {
+
+      Reminder.changeStatus(task, Status.COMPLETED)
+      ctx.reply(`Check, ${task.keyword} erledigt!`)
+    } else {
+      ctx.reply(`Keyword icht erkannt`)
+    }
+  }
+}
+
+function checkDone(ctx :ContextMessageUpdate, task: Task) {
+  if (ctx.message.text.toLowerCase().includes("snooze") ||
+    ctx.message.text.toLowerCase().includes("später")) {
+
+    if (ctx.message.text.toLowerCase().includes(task.keyword.toLowerCase())) {
+
+      Reminder.changeStatus(task, Status.COMPLETED)
+      ctx.reply(`Check, ${task.keyword} verschoben!`)
+    } else {
+      ctx.reply(`Keyword icht erkannt`)
+    }
+  }
 }
 
 const Handler = { handleResponse, handleInstallation, handleHelpMessage }

@@ -39,6 +39,15 @@ const stop = () => {
   clearInterval(intervalId)
 }
 
-const Reminder = {start, stop, findReminder}
+const changeStatus = (task, status) => {
+
+}
+
+const addNewReminder = (task) => {
+
+}
+
+
+const Reminder = {start, stop, findReminder, changeStatus, addNewReminder}
 
 export default Reminder

@@ -12,7 +12,8 @@ export interface Task {
   start_time: number,
   interval_hours: number,
   skipable: boolean,
-  snooze_default_minutes: number
+  snooze_default_minutes: number,
+  keyword: string
 }
 
 export interface Reminder {
