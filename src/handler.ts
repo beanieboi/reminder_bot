@@ -1,17 +1,23 @@
-import Bot from './bot'
-import Logger from './logger'
 const db = require('./postgres')
+import bot from './bot'
+import Telegraf, {ContextMessageUpdate} from "telegraf"
+import Logger from './logger'
 
 interface Keyword {
   task_id: string,
   keyword: string
 }
 
-const handleListReminder = (ctx: ContextMessageUpdate) => {
-  reminderData.forEach(reminder => {
-    // todo: format messages
-    ctx.reply(reminder.task.text)
-  })
+const handleHelpMessage = (ctx: ContextMessageUpdate, next) => {
+  const mess = ctx.message.text
+  if (ctx.message.text.includes("help")) {
+    bot.sendMessage(ctx.chat.id, `
+To list all reminders say: reminderlist\n
+To cancel a reminder say: cancel [keyword]\n
+To snooze a reminder say: snooze [keyword]
+`)
+  }
+  next()
 }
 
 const handleInstallation = async (ctx: ContextMessageUpdate) => {
@@ -20,12 +26,18 @@ const handleInstallation = async (ctx: ContextMessageUpdate) => {
     VALUES($1, $2)
     ON CONFLICT (chat_id)
     DO NOTHING;`
-  const res = await db.query(query, [ctx.chat.id, ctx.chat.type])
-  ctx.reply('Welcome')
+
+  try {
+    await db.query(query, [ctx.chat.id, ctx.chat.type])
+    ctx.reply('Welcome')
+  } catch (error) {
+    ctx.reply(`Error ${error}`)
+  }
 }
 
-const handleResponse = async (ctx: ContextMessageUpdate) => {
-  query = 'SELECT id as task_id, keyword FROM tasks'
+const handleResponse = async (ctx: ContextMessageUpdate, next) => {
+  Logger.debug("dd")
+  const query = 'SELECT id as task_id, keyword FROM tasks'
   const response = await db.query(query)
 
   let keywords = <Array<Keyword>>response.rows
@@ -34,8 +46,9 @@ const handleResponse = async (ctx: ContextMessageUpdate) => {
 
   })
   ctx.reply('Welcome')
+  next()
 }
 
-const Handler = { handleResponse, handleInstallation, handleListReminder }
+const Handler = { handleResponse, handleInstallation, handleHelpMessage }
 
 export default Handler
