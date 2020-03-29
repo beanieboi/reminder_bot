@@ -56,13 +56,14 @@ const changeStatus = (task: Task, status: Status, username: string) => {
 
 const addNewReminder = async (task: Task, nextReminderInMinutes: number) => {
   const getLastReminder = `SELECT due_at FROM reminders WHERE task_id = $1 ORDER BY id DESC LIMIT 1`
-  const insertNewReminder = `INSERT INTO reminders (task_id, status, start_time)
-  VALUES ($1, $2, $3)`
+  const insertNewReminder = `INSERT INTO reminders (task_id, status, due_at)
+  VALUES ($1, $2, to_timestamp($3))`
 
   try {
     const due_at = await db.query(getLastReminder, [task.id])
     const new_due_at = moment(due_at).add(nextReminderInMinutes, "m")
-    return db.query(insertNewReminder, [task.id, Status.OPEN, new_due_at.valueOf()])
+
+    return db.query(insertNewReminder, [task.id, Status.OPEN, new_due_at.format('X')])
   } catch (error) {
     return new Error(error)
   }
