@@ -33,9 +33,15 @@ const handleInstallation = async (ctx: ContextMessageUpdate) => {
 }
 
 const handleResponse = async (ctx: ContextMessageUpdate, next) => {
-  Logger.debug("dd")
   const query = 'SELECT * FROM tasks'
-  const response = await db.query(query)
+  let response
+
+  try {
+    response = await db.query(query)
+  } catch(error) {
+    ctx.reply(`Error ${error}`)
+    response = []
+  }
 
   let tasks = <Array<Task>>response.rows
   tasks.forEach((task) => {
@@ -46,13 +52,14 @@ const handleResponse = async (ctx: ContextMessageUpdate, next) => {
   next()
 }
 
-function checkSnooze(ctx: ContextMessageUpdate, task: Task) {
+function checkDone(ctx: ContextMessageUpdate, task: Task) {
   if (ctx.message.text.toLowerCase().includes("done") ||
       ctx.message.text.toLowerCase().includes("erledigt") ||
       ctx.message.text.toLowerCase().includes("passt")) {
     if (ctx.message.text.toLowerCase().includes(task.keyword.toLowerCase())) {
 
-      Reminder.changeStatus(task, Status.COMPLETED)
+      Reminder.changeStatus(ctx, task, Status.COMPLETED)
+      Reminder.addNewReminder(task)
       ctx.reply(`Check, ${task.keyword} erledigt!`)
     } else {
       ctx.reply(`Keyword icht erkannt`)
@@ -60,13 +67,14 @@ function checkSnooze(ctx: ContextMessageUpdate, task: Task) {
   }
 }
 
-function checkDone(ctx :ContextMessageUpdate, task: Task) {
+function checkSnooze(ctx :ContextMessageUpdate, task: Task) {
   if (ctx.message.text.toLowerCase().includes("snooze") ||
     ctx.message.text.toLowerCase().includes("später")) {
 
     if (ctx.message.text.toLowerCase().includes(task.keyword.toLowerCase())) {
 
-      Reminder.changeStatus(task, Status.COMPLETED)
+      Reminder.changeStatus(task, Status.SNOOZED)
+      Reminder.addNewReminder(task)
       ctx.reply(`Check, ${task.keyword} verschoben!`)
     } else {
       ctx.reply(`Keyword icht erkannt`)
