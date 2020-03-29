@@ -33,9 +33,9 @@ CREATE TABLE reminders (
     id SERIAL PRIMARY KEY,
     task_id integer NOT NULL REFERENCES tasks(id),
     status text NOT NULL,
-    due_at with time zone NOT NULL,
-    finished_time time with time zone NOT NULL DEFAULT now(),
-    finished_by text NOT NULL
+    due_at time with time zone NOT NULL,
+    finished_at time with time zone,
+    finished_by text
 );
 
 -- Indices -------------------------------------------------------

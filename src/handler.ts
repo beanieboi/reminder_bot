@@ -55,7 +55,8 @@ const handleResponse = async (ctx: ContextMessageUpdate, next) => {
 function checkDone(ctx: ContextMessageUpdate, task: Task) {
   if (ctx.message.text.toLowerCase().includes("done") ||
       ctx.message.text.toLowerCase().includes("erledigt") ||
-      ctx.message.text.toLowerCase().includes("passt")) {
+      ctx.message.text.toLowerCase().includes("passt") ||
+      ctx.message.text.toLowerCase().includes("✅")) {
     if (ctx.message.text.toLowerCase().includes(task.keyword.toLowerCase())) {
 
       Reminder.changeStatus(ctx, task, Status.COMPLETED)
