@@ -45,16 +45,12 @@ const stop = () => {
   clearInterval(intervalId)
 }
 
-const changeStatus = (ctx: ContextMessageUpdate, task: Task, status: Status) => {
+const changeStatus = (task: Task, status: Status, username: string) => {
   const query = `UPDATE reminders
   SET status = $1, finished_at = NOW(), finished_by = $2
   WHERE task_id = $3 AND reminders.status = $4 AND due_at < NOW()::time`
 
-  try {
-    db.query(query, [status, ctx.message.from.username, task.id, Status.OPEN])
-  } catch (error) {
-    ctx.reply(`Error ${error}`)
-  }
+  return db.query(query, [status, username, task.id, Status.OPEN])
 }
 
 const addNewReminder = async (task: Task, nextReminderInMinutes: number) => {
@@ -65,9 +61,9 @@ const addNewReminder = async (task: Task, nextReminderInMinutes: number) => {
   try {
     const due_at = await db.query(getLastReminder, [task.id])
     const new_due_at = moment(due_at).add(nextReminderInMinutes, "m")
-    await db.query(insertNewReminder, [task.id, Status.OPEN, new_due_at])
-  } catch(err) {
-    Logger.error(err)
+    return db.query(insertNewReminder, [task.id, Status.OPEN, new_due_at.valueOf()])
+  } catch (error) {
+    return new Error(error)
   }
 }
 

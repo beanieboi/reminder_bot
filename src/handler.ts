@@ -52,34 +52,41 @@ const handleResponse = async (ctx: ContextMessageUpdate, next) => {
   next()
 }
 
-function checkDone(ctx: ContextMessageUpdate, task: Task) {
+async function checkDone(ctx: ContextMessageUpdate, task: Task) {
   if (ctx.message.text.toLowerCase().includes("done") ||
       ctx.message.text.toLowerCase().includes("erledigt") ||
       ctx.message.text.toLowerCase().includes("passt") ||
       ctx.message.text.toLowerCase().includes("✅")) {
     if (ctx.message.text.toLowerCase().includes(task.keyword.toLowerCase())) {
 
-      Reminder.changeStatus(ctx, task, Status.COMPLETED)
-
-      Reminder.addNewReminder(task, task.interval_minutes)
-      ctx.reply(`Check, ${task.keyword} erledigt!`)
+      try {
+        await Reminder.changeStatus(task, Status.COMPLETED, ctx.message.from.username)
+        Reminder.addNewReminder(task, task.interval_minutes)
+        ctx.reply(`Check, ${task.keyword} erledigt!`)
+      } catch (error) {
+        ctx.reply(error)
+      }
     } else {
-      ctx.reply(`Keyword icht erkannt`)
+      ctx.reply(`Keyword nicht erkannt`)
     }
   }
 }
 
-function checkSnooze(ctx :ContextMessageUpdate, task: Task) {
+async function checkSnooze(ctx :ContextMessageUpdate, task: Task) {
   if (ctx.message.text.toLowerCase().includes("snooze") ||
     ctx.message.text.toLowerCase().includes("später")) {
 
     if (ctx.message.text.toLowerCase().includes(task.keyword.toLowerCase())) {
 
-      Reminder.changeStatus(ctx, task, Status.SNOOZED)
-      Reminder.addNewReminder(task, task.snooze_default_minutes)
-      ctx.reply(`Check, ${task.keyword} verschoben!`)
+      try {
+        await Reminder.changeStatus(task, Status.SNOOZED, ctx.message.from.username)
+        await Reminder.addNewReminder(task, task.snooze_default_minutes)
+        ctx.reply(`Check, ${task.keyword} verschoben!`)
+      } catch (error) {
+        ctx.reply(error)
+      }
     } else {
-      ctx.reply(`Keyword icht erkannt`)
+      ctx.reply(`Keyword nicht erkannt`)
     }
   }
 }
