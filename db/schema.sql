@@ -13,20 +13,6 @@ CREATE UNIQUE INDEX installations_chat_id_key ON installations(chat_id int8_ops)
 
 -- Table Definition ----------------------------------------------
 
-CREATE TABLE reminders (
-    id SERIAL PRIMARY KEY,
-    task_id integer NOT NULL REFERENCES tasks(id),
-    status text NOT NULL,
-    start_time time with time zone NOT NULL
-);
-
--- Indices -------------------------------------------------------
-
-CREATE UNIQUE INDEX reminders_pkey ON reminders(id int4_ops);
-
-
--- Table Definition ----------------------------------------------
-
 CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
     installation_id integer NOT NULL REFERENCES installations(id),
@@ -40,3 +26,19 @@ CREATE TABLE tasks (
 -- Indices -------------------------------------------------------
 
 CREATE UNIQUE INDEX tasks_pkey ON tasks(id int4_ops);
+
+-- Table Definition ----------------------------------------------
+
+CREATE TABLE reminders (
+    id SERIAL PRIMARY KEY,
+    task_id integer NOT NULL REFERENCES tasks(id),
+    status text NOT NULL,
+    start_time time with time zone NOT NULL
+);
+
+-- Indices -------------------------------------------------------
+
+CREATE UNIQUE INDEX reminders_pkey ON reminders(id int4_ops);
+
+
+
