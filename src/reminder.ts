@@ -7,7 +7,6 @@ const db = require('./postgres')
 const intervalInMs = 60000
 let intervalId: NodeJS.Timeout
 
-
 interface OpenReminder {
   status: string,
   message: string,
@@ -15,27 +14,25 @@ interface OpenReminder {
   chat_id: number
 }
 
-const findReminder = async () => {
+const findReminder: () => Promise<OpenReminder[]> = async () => {
   const query = `SELECT status, message, interval_hours, chat_id FROM reminders
     LEFT JOIN tasks ON reminders.task_id = tasks.id
     LEFT JOIN installations ON tasks.installation_id = installations.id`
 
   try {
     const response = await db.query(query)
-    const rows: OpenReminder[] = response.rows
-    return rows
+    return response.rows
   } catch(err) {
-    return []
+    return Promise.resolve([])
   }
 }
 
 const start = () => {
   intervalId = setInterval( async() => {
     const notifyReminder = await findReminder()
-    Logger.debug(notifyReminder)
-    // notifyReminder.forEach((reminder) => {
-    //   Bot.sendMessage(`${reminder.task.text} at ${moment(reminder.task.start_time).format("dddd, MMMM Do YYYY, H:mm")}`)
-    // })
+    notifyReminder.forEach((reminder) => {
+      Bot.sendMessage(reminder.chat_id, `${reminder.message}`)
+    })
   }, intervalInMs)
 }
 
