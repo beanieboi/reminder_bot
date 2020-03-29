@@ -41,6 +41,3 @@ CREATE TABLE reminders (
 -- Indices -------------------------------------------------------
 
 CREATE UNIQUE INDEX reminders_pkey ON reminders(id int4_ops);
-
-
-

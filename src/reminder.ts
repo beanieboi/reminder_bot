@@ -60,8 +60,8 @@ const addNewReminder = async (task: Task, nextReminderInMinutes: number) => {
   VALUES ($1, $2, to_timestamp($3))`
 
   try {
-    const due_at = await db.query(getLastReminder, [task.id])
-    const new_due_at = moment(due_at).add(nextReminderInMinutes, "m")
+    const response = await db.query(getLastReminder, [task.id])
+    const new_due_at = moment(response.rows[0].due_at).add(nextReminderInMinutes, "m")
 
     return db.query(insertNewReminder, [task.id, Status.OPEN, new_due_at.format('X')])
   } catch (error) {
