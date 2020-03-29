@@ -49,7 +49,7 @@ const changeStatus = (ctx: ContextMessageUpdate, task: Task, status: Status) => 
   WHERE task_id = $3 AND reminders.status = $4 AND due_at < NOW()::time`
 
   try {
-    db.query(query, [status, task.id])
+    db.query(query, [status, ctx.message.from.username, task.id, Status.OPEN])
   } catch (error) {
     ctx.reply(`Error ${error}`)
   }
