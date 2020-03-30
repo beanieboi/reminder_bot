@@ -66,8 +66,6 @@ async function checkDone(ctx: ContextMessageUpdate, task: Task) {
       } catch (error) {
         ctx.reply(error)
       }
-    } else {
-      ctx.reply(`Keyword nicht erkannt`)
     }
   }
 }
@@ -85,8 +83,6 @@ async function checkSnooze(ctx :ContextMessageUpdate, task: Task) {
       } catch (error) {
         ctx.reply(error)
       }
-    } else {
-      ctx.reply(`Keyword nicht erkannt`)
     }
   }
 }
