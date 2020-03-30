@@ -49,7 +49,7 @@ const stop = () => {
 const changeStatus = (task: Task, status: Status, username: string) => {
   const query = `UPDATE reminders
   SET status = $1, finished_at = NOW(), finished_by = $2
-  WHERE task_id = $3 AND reminders.status = $4 AND due_at < NOW()`
+  WHERE task_id = $3 AND reminders.status = $4`
 
   return db.query(query, [status, username, task.id, Status.OPEN])
 }
