@@ -1,17 +1,8 @@
--- Table Definition ----------------------------------------------
-
 CREATE TABLE installations (
     id SERIAL PRIMARY KEY,
     chat_id bigint NOT NULL UNIQUE,
     chat_type text NOT NULL
 );
-
--- Indices -------------------------------------------------------
-
-CREATE UNIQUE INDEX installations_pkey ON installations(id int4_ops);
-CREATE UNIQUE INDEX installations_chat_id_key ON installations(chat_id int8_ops);
-
--- Table Definition ----------------------------------------------
 
 CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
@@ -23,12 +14,6 @@ CREATE TABLE tasks (
     keyword text NOT NULL
 );
 
--- Indices -------------------------------------------------------
-
-CREATE UNIQUE INDEX tasks_pkey ON tasks(id int4_ops);
-
--- Table Definition ----------------------------------------------
-
 CREATE TABLE reminders (
     id SERIAL PRIMARY KEY,
     task_id integer NOT NULL REFERENCES tasks(id),
@@ -37,7 +22,3 @@ CREATE TABLE reminders (
     finished_at timestamp with time zone,
     finished_by text
 );
-
--- Indices -------------------------------------------------------
-
-CREATE UNIQUE INDEX reminders_pkey ON reminders(id int4_ops);
