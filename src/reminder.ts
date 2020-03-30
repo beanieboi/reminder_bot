@@ -6,7 +6,7 @@ import Logger from './logger'
 import Bot from './bot'
 
 
-const intervalInMs = 6000
+const intervalInMs = 60000
 let intervalId: NodeJS.Timeout
 
 interface OpenReminder {
