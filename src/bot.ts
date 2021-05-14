@@ -22,8 +22,6 @@ const sendMessage = async (chatId: number, message: string) => {
   channel.send(message)
 }
 
-const destroy = client.destroy
-
-const Bot = {launch, sendMessage, destroy}
+const Bot = {launch, sendMessage}
 
 export default Bot
