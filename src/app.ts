@@ -8,6 +8,7 @@ async function start() {
     reminder.start()
   } catch (error) {
     reminder.stop()
+    Bot.destroy();
     Logger.error(error)
   }
 }
