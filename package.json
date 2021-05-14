@@ -17,6 +17,7 @@
   "author": "Kristin and Benjamin Fritsch",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "^15.3.0",
     "consola": "^2.11.3",
     "discord.js": "^12.5.3",
     "dotenv": "^8.2.0",
