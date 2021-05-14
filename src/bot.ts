@@ -1,7 +1,6 @@
 import { config } from "dotenv"
 import { resolve } from "path"
-import Logger from './logger'
-import Telegraf from "telegraf"
+import Discord, { TextChannel } from "discord.js"
 
 if (process.env.DYNO == undefined) {
   config({ path: resolve(__dirname, "../.env") })
@@ -9,22 +8,22 @@ if (process.env.DYNO == undefined) {
 
 import Handler from './handler'
 
-const bot = new Telegraf(process.env.BOT_TOKEN)
+const client = new Discord.Client();
 
 const launch = async () => {
-  const botInfo = await bot.telegram.getMe()
-  bot.options.username = botInfo.username
+  client.on('message', Handler.handleResponse)
 
-  bot.start(Handler.handleInstallation)
-  bot.on('text', Handler.handleHelpMessage, Handler.handleResponse)
-
-  return bot.launch()
+  // uses env var DISCORD_TOKEN by default
+  return client.login()
 }
 
-const sendMessage = (chatId: number, message: string) => {
-  return bot.telegram.sendMessage(chatId, message)
+const sendMessage = async (chatId: number, message: string) => {
+  const channel = await client.channels.fetch(chatId.toString()) as TextChannel
+  channel.send(message)
 }
 
-const Bot = {launch, sendMessage}
+const destroy = client.destroy
+
+const Bot = {launch, sendMessage, destroy}
 
 export default Bot

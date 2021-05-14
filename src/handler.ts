@@ -1,92 +1,62 @@
 const db = require('./postgres')
 import bot from './bot'
-import Telegraf, {ContextMessageUpdate} from "telegraf"
-import Logger from './logger'
+import Discord, { Message } from "discord.js"
 import Reminder from './reminder'
 import { Task, Status } from './types'
 
-const handleHelpMessage = (ctx: ContextMessageUpdate, next) => {
-  const mess = ctx.message.text
-  if (ctx.message.text.includes("help")) {
-    bot.sendMessage(ctx.chat.id, `
-To list all reminders say: reminderlist\n
-To cancel a reminder say: cancel [keyword]\n
-To snooze a reminder say: snooze [keyword]
-`)
-  }
-  next()
-}
-
-const handleInstallation = async (ctx: ContextMessageUpdate) => {
-  const query = `INSERT INTO
-    installations (chat_id, chat_type)
-    VALUES($1, $2)
-    ON CONFLICT (chat_id)
-    DO NOTHING;`
-
-  try {
-    await db.query(query, [ctx.chat.id, ctx.chat.type])
-    ctx.reply('Welcome')
-  } catch (error) {
-    ctx.reply(`Error ${error}`)
-  }
-}
-
-const handleResponse = async (ctx: ContextMessageUpdate, next) => {
+const handleResponse = async (message: Message) => {
   const query = 'SELECT * FROM tasks'
   let response
 
   try {
     response = await db.query(query)
   } catch(error) {
-    ctx.reply(`Error ${error}`)
+    message.reply(`Error ${error}`)
     response = []
   }
 
   let tasks = <Array<Task>>response.rows
   tasks.forEach((task) => {
-    checkSnooze(ctx, task)
-    checkDone(ctx, task)
+    checkSnooze(message, task)
+    checkDone(message, task)
   })
-
-  next()
 }
 
-async function checkDone(ctx: ContextMessageUpdate, task: Task) {
-  if (ctx.message.text.toLowerCase().includes("done") ||
-      ctx.message.text.toLowerCase().includes("erledigt") ||
-      ctx.message.text.toLowerCase().includes("passt") ||
-      ctx.message.text.toLowerCase().includes("✅")) {
-    if (ctx.message.text.toLowerCase().includes(task.keyword.toLowerCase())) {
+async function checkDone(message: Message, task: Task) {
+  if (message.content.toLowerCase().includes("done") ||
+      message.content.toLowerCase().includes("erledigt") ||
+      message.content.toLowerCase().includes("passt") ||
+      message.content.toLowerCase().includes("✅")) {
+    if (message.content.toLowerCase().includes(task.keyword.toLowerCase())) {
 
       try {
-        await Reminder.changeStatus(task, Status.COMPLETED, ctx.message.from.username)
+        await Reminder.changeStatus(task, Status.COMPLETED, message.author.username)
         Reminder.addNewReminder(task, task.interval_minutes)
-        ctx.reply(`Check, ${task.keyword} erledigt!`)
+        message.reply(`Check, ${task.keyword} erledigt!`)
       } catch (error) {
-        ctx.reply(error)
+        message.reply(error)
       }
     }
   }
 }
 
-async function checkSnooze(ctx :ContextMessageUpdate, task: Task) {
-  if (ctx.message.text.toLowerCase().includes("snooze") ||
-    ctx.message.text.toLowerCase().includes("später")) {
+async function checkSnooze(message: Message, task: Task) {
+  if (message.content.toLowerCase().includes("snooze") ||
+    message.content.toLowerCase().includes("später")) {
 
-    if (ctx.message.text.toLowerCase().includes(task.keyword.toLowerCase())) {
+    if (message.content.toLowerCase().includes(task.keyword.toLowerCase())) {
 
       try {
-        await Reminder.changeStatus(task, Status.SNOOZED, ctx.message.from.username)
+        await Reminder.changeStatus(task, Status.SNOOZED, message.author.username)
         await Reminder.addNewReminder(task, task.snooze_default_minutes)
-        ctx.reply(`Check, ${task.keyword} verschoben!`)
+        message.reply(`Check, ${task.keyword} verschoben!`)
       } catch (error) {
-        ctx.reply(error)
+        message.reply(error)
       }
     }
   }
 }
 
-const Handler = { handleResponse, handleInstallation, handleHelpMessage }
+const Handler = { handleResponse }
 
 export default Handler

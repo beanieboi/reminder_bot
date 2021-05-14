@@ -1,4 +1,3 @@
-import {ContextMessageUpdate} from "telegraf"
 import moment from "moment"
 const db = require('./postgres')
 import { Task, Status } from './types'
