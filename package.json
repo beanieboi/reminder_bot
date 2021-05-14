@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "keywords": [
-    "telegram",
+    "discord",
     "bot",
     "reminder"
   ],
@@ -18,10 +18,10 @@
   "license": "ISC",
   "dependencies": {
     "consola": "^2.11.3",
+    "discord.js": "^12.5.3",
     "dotenv": "^8.2.0",
     "moment": "^2.24.0",
-    "pg": "^7.18.2",
-    "telegraf": "^3.36.0"
+    "pg": "^7.18.2"
   },
   "devDependencies": {
     "@types/consola": "^2.2.5",

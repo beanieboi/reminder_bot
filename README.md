@@ -2,7 +2,7 @@
 
 ## Setup
 
-Set the bot token: `echo BOT_TOKEN=YOUR_TOKEN >> .env`
+Set the bot token: `echo DISCORD_TOKEN=YOUR_TOKEN >> .env`
 
 ## Run the app
 
