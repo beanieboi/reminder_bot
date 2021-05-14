@@ -9,7 +9,7 @@ if (process.env.DYNO == undefined) {
 }
 
 const client = new Discord.Client();
-client.on('message', Handler.handleResponse)
+client.on('message', (message) => { Handler.handleResponse(client.user.id, message) })
 
 const sendMessage = async (chatId: number, message: string) => {
   try {

@@ -1,10 +1,13 @@
 const db = require('./postgres')
-import bot from './bot'
-import Discord, { Message } from "discord.js"
+import { Message } from "discord.js"
 import Reminder from './reminder'
 import { Task, Status } from './types'
 
-const handleResponse = async (message: Message) => {
+const handleResponse = async (botId: string, message: Message) => {
+  if (message.author.id === botId) {
+    return
+  }
+
   const query = 'SELECT * FROM tasks'
   let response
 
